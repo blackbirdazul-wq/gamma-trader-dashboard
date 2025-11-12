@@ -92,8 +92,8 @@ st.markdown("""
 # ========== CONFIGURAÇÕES ==========
 TICKERS = {
     "EWZ Brasil": {"symbol": "EWZ", "color": "#2ecc71", "card_class": "ewz-card"},
-    "S&P 500": {"symbol": "^GSPC", "color": "#00CC96", "card_class": "sp500-card"},
-    "Nasdaq": {"symbol": "^IXIC", "color": "#636EFA", "card_class": "nasdaq-card"}
+    "S&P 500": {"symbol": "SPY", "color": "#00CC96", "card_class": "sp500-card"},
+    "Nasdaq": {"symbol": "QQQ", "color": "#636EFA", "card_class": "nasdaq-card"}
 }
 
 # ========== FUNÇÕES GREGOS (DELTA & GAMMA) ==========
@@ -514,5 +514,6 @@ if auto_refresh:
 else:
     if st.button("🔄 Atualizar Dados", type="primary", use_container_width=True):
         st.rerun()
+
 
 st.caption("🎯 **Dashboard Especial EWZ + S&P500 + Nasdaq - Análise Técnica Completa com Gregos**")
