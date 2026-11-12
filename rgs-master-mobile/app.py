@@ -1,5 +1,5 @@
-"""RGS MASTER MOBILE — painel gratuito Streamlit + Yahoo Finance."""
-from datetime import datetime, timezone
+"""RGS MASTER MOBILE V2: contexto, qualidade e evolução, sem ordens."""
+from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 from concurrent.futures import ThreadPoolExecutor
 import math
@@ -14,14 +14,13 @@ SYMS = {
     "DXY": ("DX-Y.NYB", "Índice do dólar", -1, 0.10),
     "VIX": ("^VIX", "Volatilidade", -1, 1.00),
     "EWZ": ("EWZ", "ETF Brasil", 1, 0.40),
-    "NQ": ("NQ=F", "Nasdaq futuro (reserva)", 1, 0.20),
+    "VALE": ("VALE", "Vale ADR", 1, 0.40),
+    "PBR": ("PBR", "Petrobras ADR", 1, 0.40),
+    "NQ": ("NQ=F", "Nasdaq futuro • confirmação adicional", 1, 0.20),
 }
-st.set_page_config(page_title="RGS MASTER MOBILE", page_icon="📊", layout="centered")
-st.markdown("""<style>
-.block-container{padding-top:1.1rem}
-h1{font-size:1.85rem!important}
-div[data-testid="stMetric"]{padding:.7rem;border-radius:.7rem;border:1px solid #5b627030}
-</style>""", unsafe_allow_html=True)
+GROUPS = {"GLOBAL": ("ES", "DXY", "VIX"), "BRASIL": ("EWZ", "VALE", "PBR")}
+MAX_AGE = 45
+
 
 def good(x):
     try:
@@ -30,129 +29,300 @@ def good(x):
     except (ValueError, TypeError):
         return None
 
+
+def recent_move(series):
+    """15 min entre candles próximos, sem atravessar noite ou lacuna grande."""
+    if len(series) < 3:
+        return None
+    end = series.index[-1]
+    earlier = series[series.index <= end - pd.Timedelta(minutes=15)]
+    if earlier.empty:
+        return None
+    start = earlier.index[-1]
+    window = series.loc[start:end]
+    minutes = (end - start).total_seconds() / 60
+    gaps = window.index.to_series().diff().dropna().dt.total_seconds()
+    if start.date() != end.date() or not 15 <= minutes <= 20 or (gaps > 600).any():
+        return None
+    base = good(earlier.iloc[-1])
+    return (float(series.iloc[-1]) / base - 1) * 100 if base else None
+
+
 def get_one(code):
-    ticker, name, direction, threshold = SYMS[code]
+    ticker, name, _, _ = SYMS[code]
     result = dict(code=code, name=name, price=None, pct=None, time=None,
-                  valid=False, reason="Indisponível", line=[])
+                  age=None, move=None, valid=False, reason="SEM DADOS", line=[], times=[], reference=None)
     try:
         item = yf.Ticker(ticker)
         bars = item.history(period="5d", interval="5m", prepost=True,
                             auto_adjust=False, timeout=12)
         if bars is None or bars.empty or "Close" not in bars:
             return result
-        bars = bars.dropna(subset=["Close"])
-        if bars.empty:
+        close = bars["Close"].dropna().sort_index()
+        close = close[~close.index.duplicated(keep="last")]
+        close = close[close.map(good).notna()]
+        if close.empty:
             return result
-        price = good(bars["Close"].iloc[-1])
-        ts = pd.Timestamp(bars.index[-1]).to_pydatetime()
-        if ts.tzinfo is None or price is None:
-            result["reason"] = "Horário ou preço inválido"
+        ts = pd.Timestamp(close.index[-1]).to_pydatetime()
+        if ts.tzinfo is None:
+            result["reason"] = "HORÁRIO INVÁLIDO"
             return result
         now = datetime.now(timezone.utc)
-        stale = max(0, (now-ts.astimezone(timezone.utc)).total_seconds()/60)
-        result.update(price=price, time=ts.astimezone(BR),
-                      line=[float(v) for v in bars["Close"].tail(72).tolist()])
+        age = (now - ts.astimezone(timezone.utc)).total_seconds() / 60
+        price = float(close.iloc[-1])
+        result.update(price=price, time=ts.astimezone(BR), age=max(0, age),
+                      move=recent_move(close), line=close.tail(72).tolist(),
+                      times=[t.to_pydatetime().astimezone(BR) for t in close.tail(72).index])
+        if age < -5:
+            result["reason"] = "HORÁRIO FUTURO — fora do score"
+            return result
+        # Uma única referência explícita: último candle diário anterior à data
+        # local da cotação. Não misturar previous_close estendido com regular.
+        daily = item.history(period="1mo", interval="1d", auto_adjust=False, timeout=12)
         previous = None
-        try:
-            previous = good(item.fast_info.get("previous_close"))
-        except Exception:
-            pass
-        if previous is None:
-            daily = item.history(period="10d", interval="1d", auto_adjust=False,
-                                 timeout=12)
-            if daily is not None and not daily.empty and "Close" in daily:
-                candle_day = ts.date()
-                earlier = daily[daily.index.date < candle_day]
-                if not earlier.empty:
-                    previous = good(earlier["Close"].iloc[-1])
-        if previous:
-            result["pct"] = (price/previous-1)*100
-        if stale > 45:
-            result["reason"] = f"Cotação antiga ({stale:.0f} min)"
+        if daily is not None and not daily.empty and "Close" in daily:
+            earlier = daily[daily.index.date < ts.date()]["Close"].dropna().sort_index()
+            if not earlier.empty:
+                previous = good(earlier.iloc[-1])
+                result["reference"] = str(earlier.index[-1].date())
+        if previous is not None:
+            result["pct"] = (price / previous - 1) * 100
+        if age > MAX_AGE:
+            result["reason"] = "COTAÇÃO ANTIGA — fora do score"
         elif previous is None:
-            result["reason"] = "Sem fechamento anterior"
+            result["reason"] = "SEM REFERÊNCIA — fora do score"
         else:
             result["valid"] = True
-            result["reason"] = "Cotação válida"
+            result["reason"] = "Cotação válida pelo limite de 45 min"
     except Exception as exc:
-        result["reason"] = "Erro Yahoo: " + type(exc).__name__
+        result["reason"] = "FALHA YAHOO — " + type(exc).__name__
     return result
+
 
 @st.cache_data(ttl=80, show_spinner=False)
 def fetch_all():
     with ThreadPoolExecutor(max_workers=3) as pool:
-        values = list(pool.map(get_one, SYMS.keys()))
+        values = list(pool.map(get_one, SYMS))
     return {v["code"]: v for v in values}
+
+
+def fresh(row, now):
+    """Reavaliar a idade mesmo quando a resposta veio do cache."""
+    row = dict(row)
+    if row["time"] is not None:
+        age = (now - row["time"]).total_seconds() / 60
+        row["age"] = max(0, age)
+        if age > MAX_AGE:
+            row.update(valid=False, reason="COTAÇÃO ANTIGA — fora do score")
+    return row
+
 
 def state(code, row):
     if not row["valid"] or row["pct"] is None:
-        return "SEM DADOS"
-    pct = row["pct"]
-    threshold = SYMS[code][3]
-    if abs(pct) < threshold:
+        return "FORA DO SCORE"
+    signed = row["pct"] * SYMS[code][2]
+    if abs(signed) < SYMS[code][3]:
         return "NEUTRO"
-    return "ON" if (1 if pct > 0 else -1) == SYMS[code][2] else "OFF"
+    return "ON" if signed > 0 else "OFF"
 
-st.caption("RGS • MONITOR GLOBAL · CELULAR")
-st.title("📊 RGS MASTER MOBILE")
-st.caption("Yahoo Finance · ES · DXY · VIX · EWZ")
-with st.expander("⚙️ Configurações e metodologia"):
-    use_nq = st.checkbox("Trocar VIX por Nasdaq futuro (NQ) quando VIX não estiver válido", value=True)
-    st.info("As variações usam o fechamento anterior informado pelo Yahoo. "
-            "Os filtros são heurísticos, sem validação por backtest. "
-            "Cotação atrasada mais de 45 minutos não pontua.")
-st.caption("Horários principais (Brasília): 08:50 · 09:00 · 09:25 · 10:00")
+
+def group_summary(codes, quotes):
+    labels = [state(code, quotes[code]) for code in codes]
+    valid = sum(x != "FORA DO SCORE" for x in labels)
+    score = labels.count("ON") - labels.count("OFF")
+    # Nenhum bloco recebe direção se faltar uma de suas três fontes.
+    label = ("INCONCLUSIVO" if valid < len(codes) else
+             "RISK ON" if score >= 2 else "RISK OFF" if score <= -2 else "MISTO / NEUTRO")
+    return dict(label=label, score=score, valid=valid)
+
+
+def momentum_text(code, row):
+    if not row["valid"] or row["move"] is None:
+        return "Movimento recente indisponível"
+    change = row["move"] * SYMS[code][2]
+    threshold = SYMS[code][3] / 3
+    if abs(change) < threshold:
+        return "Contexto estável nos últimos ~15 min"
+    return "Melhorando para risco nos últimos ~15 min" if change > 0 else "Piorando para risco nos últimos ~15 min"
+
+
+def confirmation(previous, summary, times, now):
+    """Só confirmar com novos candles de TODAS as fontes, não novo clique."""
+    label = summary["label"]
+    current = dict(label=label, times=times, at=now, confirmed=False)
+    if label not in ("RISK ON", "RISK OFF"):
+        return current, "Sem direção confirmada"
+    if previous and previous["label"] == label:
+        elapsed = (now - previous["at"]).total_seconds()
+        if 0 <= elapsed <= 1200:
+            progressed = all(t and p and t > p for t, p in zip(times, previous["times"]))
+            if elapsed >= 60 and progressed:
+                current["confirmed"] = True
+                return current, "Confirmado em 2 leituras com novos candles"
+            # Manter a primeira observação enquanto não chegam todos os candles.
+            return previous, ("Confirmado em 2 leituras com novos candles" if previous["confirmed"]
+                              else "Sinal inicial • aguardando novos candles")
+    return current, "Sinal inicial • aguardando novos candles"
+
+
+def divergence(global_s, brazil_s, quotes):
+    g, b = global_s["label"], brazil_s["label"]
+    messages = []
+    if "INCONCLUSIVO" in (g, b):
+        messages.append("Dados insuficientes para comparar Global e Brasil com direção completa.")
+    elif g == b and g in ("RISK ON", "RISK OFF"):
+        messages.append("Global e Brasil alinhados nesta leitura.")
+    elif g in ("RISK ON", "RISK OFF"):
+        messages.append("Divergência: Brasil não acompanha a direção global.")
+    else:
+        messages.append("Global misto: ainda não há alinhamento direcional entre os blocos.")
+    es, nq = state("ES", quotes["ES"]), state("NQ", quotes["NQ"])
+    if {es, nq} == {"ON", "OFF"}:
+        messages.append("ES e NQ em direções opostas; bolsas americanas sem confirmação conjunta.")
+    if {state("VALE", quotes["VALE"]), state("PBR", quotes["PBR"])} == {"ON", "OFF"}:
+        messages.append("Vale e Petrobras divergem entre si.")
+    return messages
+
+
+def quote_card(code, row):
+    label = state(code, row)
+    st.metric(f"{code} · {label}", f'{row["price"]:,.2f}' if row["price"] is not None else "—",
+              f'{row["pct"]:+.2f}%' if row["pct"] is not None else None, delta_color="off")
+    st.caption(row["name"] + " · " + row["reason"])
+    if row["time"]:
+        st.caption("Candle " + row["time"].strftime("%d/%m %H:%M") + f' BRT · idade {row["age"]:.0f} min')
+    if row["reference"]:
+        st.caption("Variação vs. fechamento diário Yahoo de " + row["reference"])
+    st.caption(momentum_text(code, row))
+    if row["valid"] and row["move"] is not None:
+        st.caption(f'Movimento do preço em ~15 min: {row["move"]:+.2f}%')
+
+
+def history_panel(quotes, summaries, now):
+    day = now.date().isoformat()
+    if st.session_state.get("history_day") != day:
+        st.session_state["history_day"] = day
+        st.session_state["readings"] = []
+        st.session_state["slots"] = []
+    st.subheader("Comparação da manhã")
+    st.caption("Horários de Brasília: 08:50 · 09:25 · 09:50. Registra somente com esta página aberta; "
+               "não recupera horários perdidos. Histórico desta sessão, que pode ser perdido ao fechar/recarregar. Exporte para guardar.")
+    manual = st.button("Registrar leitura agora")
+    minute = now.hour * 60 + now.minute
+    target = next((label for label, m in [("08:50", 530), ("09:25", 565), ("09:50", 590)]
+                   if m <= minute < m + 5 and label not in st.session_state["slots"]), None)
+    if manual or target:
+        record = {"Registro BRT": now.strftime("%Y-%m-%d %H:%M:%S"), "Janela": target or "Manual"}
+        for name, summary in summaries.items():
+            record[name] = summary["label"]
+            record[name + " score"] = summary["score"]
+        for code, row in quotes.items():
+            record[code + " %"] = round(row["pct"], 3) if row["valid"] and row["pct"] is not None else None
+            record[code + " candle BRT"] = row["time"].isoformat() if row["time"] else ""
+            record[code + " status"] = row["reason"]
+        st.session_state["readings"] = (st.session_state["readings"] + [record])[-100:]
+        if target:
+            st.session_state["slots"] = st.session_state["slots"] + [target]
+        st.success("Leitura registrada com o horário real da coleta.")
+    readings = st.session_state["readings"]
+    if readings:
+        frame = pd.DataFrame(readings)
+        st.dataframe(frame[["Registro BRT", "Janela", "GLOBAL", "GLOBAL score", "BRASIL", "BRASIL score"]],
+                     hide_index=True, use_container_width=True)
+        if len(readings) >= 2:
+            first, last = readings[0], readings[-1]
+            comparison = []
+            for code in SYMS:
+                a, b = first[code + " %"], last[code + " %"]
+                comparison.append({"Ativo": code, "Mudança desde a 1ª leitura (p.p.)":
+                                   round(b - a, 3) if a is not None and b is not None else None})
+            st.dataframe(pd.DataFrame(comparison), hide_index=True, use_container_width=True)
+            st.caption("Mudança na variação diária em pontos percentuais; dados inválidos ficam em branco.")
+        st.download_button("Baixar histórico CSV", frame.to_csv(index=False).encode("utf-8-sig"),
+                           file_name=f"rgs_leituras_{day}.csv", mime="text/csv")
+    else:
+        st.info("Nenhuma leitura registrada nesta sessão.")
+
+
+def main():
+    st.set_page_config(page_title="RGS MASTER MOBILE", page_icon="📊", layout="centered")
+    st.markdown("""<style>
+    .block-container{padding-top:2.5rem;padding-bottom:2rem}
+    h1{font-size:1.85rem!important}
+    div[data-testid="stMetric"]{padding:.7rem;border-radius:.7rem;border:1px solid #5b627030}
+    </style>""", unsafe_allow_html=True)
+    st.caption("RGS • MONITOR GLOBAL · CELULAR · V2")
+    st.title("📊 RGS MASTER MOBILE")
+    st.caption("Global + Brasil • força recente • qualidade dos dados")
+    with st.expander("⚙️ Metodologia e limites"):
+        st.write("Global: ES, DXY e VIX. Brasil: EWZ, VALE e PBR. Cada bloco tem três votos iguais; "
+                 "exige 3/3 válidos e saldo de pelo menos +2 ou −2 para indicar direção. "
+                 "NQ é confirmação adicional, não substitui VIX e não soma voto.")
+        st.write("DXY e VIX caindo favorecem ON na regra heurística. Limiares diários: ES 0,15%; "
+                 "DXY 0,10%; VIX 1%; EWZ/VALE/PBR 0,40%; NQ 0,20%. Sem calibração por backtest.")
+        st.write("Cotação com mais de 45 minutos fica fora do score, mesmo com preço disponível. "
+                 "Válido não significa tempo real. Mercado fechado ou sem negócios pode produzir cotação antiga.")
+        st.write("Variação contra o último candle diário Yahoo anterior à data da cotação. "
+                 "Movimento recente usa ~15 minutos sem lacunas maiores que 10 minutos. "
+                 "Confirmação exige a mesma direção com novos candles das três fontes, "
+                 "entre 1 e 20 minutos da observação anterior; cliques repetidos não confirmam.")
+        st.caption("EWZ e ADRs não representam todo o mercado brasileiro. Dados do Yahoo podem atrasar ou falhar.")
+    screen()
+
 
 @st.fragment(run_every="90s")
 def screen():
-    now = datetime.now(timezone.utc).astimezone(BR)
-    left, right = st.columns([2, 1])
-    left.caption("Atualização: " + now.strftime("%d/%m/%Y %H:%M:%S"))
-    if right.button("↻ Atualizar", use_container_width=True):
+    if st.button("↻ Atualizar", use_container_width=True):
         fetch_all.clear()
     with st.spinner("Consultando Yahoo Finance…"):
-        quotes = fetch_all()
-    active = ["ES", "DXY", "VIX", "EWZ"]
-    if use_nq and not quotes["VIX"]["valid"] and quotes["NQ"]["valid"]:
-        active[2] = "NQ"
-        st.warning("VIX sem cotação válida; Nasdaq futuro usado como substituto.")
-    labels = {code: state(code, quotes[code]) for code in active}
-    on = sum(v=="ON" for v in labels.values())
-    off = sum(v=="OFF" for v in labels.values())
-    valid = sum(v!="SEM DADOS" for v in labels.values())
-    score = on-off
-    classification = ("INCONCLUSIVO" if valid < 3 else
-                      "RISK ON" if score >= 3 else
-                      "RISK OFF" if score <= -3 else "MISTO / NEUTRO")
-    color = "#2ecb93" if classification=="RISK ON" else "#ff7070" if classification=="RISK OFF" else "#e0bf66"
-    st.markdown(f'<div style="border:1px solid #64748b50;padding:18px;border-radius:14px">'
-                f'<small>LEITURA GLOBAL</small>'
-                f'<h2 style="color:{color};margin:6px 0">{classification}</h2>'
-                f'<strong>Score {score:+d}/4</strong> · {valid}/4 válidos '
-                f'· {on} ON · {off} OFF</div>', unsafe_allow_html=True)
-    if classification in ("RISK ON","RISK OFF"):
-        st.caption("Viés contextual; confirmar preço, DI, WDO e fluxo antes de operar WIN.")
-    else:
-        st.caption("Sinais mistos ou insuficientes; não antecipar direção do WIN.")
-    col = st.columns(2)
-    for i, code in enumerate(active):
-        r = quotes[code]
-        with col[i%2]:
-            price = f'{r["price"]:,.2f}' if r["price"] is not None else "—"
-            delta = f'{r["pct"]:+.2f}%' if r["pct"] is not None else None
-            st.metric(f'{code} · {labels[code]}', price, delta, delta_color="off")
-            st.caption(r["name"] + " · " + r["reason"])
-            if r["time"]:
-                st.caption("Candle " + r["time"].strftime("%H:%M %d/%m") + " BRT")
-    st.caption("DXY e VIX em queda contam como RISK ON. EWZ pode ficar sem dados antes da sessão americana.")
+        raw = fetch_all()
+    now = datetime.now(timezone.utc).astimezone(BR)
+    quotes = {code: fresh(row, now) for code, row in raw.items()}
+    st.caption("Consulta: " + now.strftime("%d/%m/%Y %H:%M:%S") + " BRT · atualiza a cada 90 s com a página aberta")
+    core = [c for codes in GROUPS.values() for c in codes]
+    count = sum(quotes[c]["valid"] for c in core)
+    st.caption(f"QUALIDADE DOS DADOS · {count}/6 válidos para os blocos · NQ adicional: "
+               + ("válido" if quotes["NQ"]["valid"] else "indisponível para confirmação"))
+    summaries = {name: group_summary(codes, quotes) for name, codes in GROUPS.items()}
+    for name, codes in GROUPS.items():
+        summary = summaries[name]
+        key = "confirmation_" + name
+        previous = st.session_state.get(key)
+        record, status = confirmation(previous, summary, [quotes[c]["time"] for c in codes], now)
+        st.session_state[key] = record
+        color = "#21966b" if summary["label"] == "RISK ON" else "#e04c58" if summary["label"] == "RISK OFF" else "#a77b12"
+        st.markdown(f'<div style="border:1px solid #64748b50;padding:18px;border-radius:14px;margin-bottom:12px">'
+                    f'<strong>{name}</strong><h2 style="color:{color};margin:6px 0">{summary["label"]}</h2>'
+                    f'<strong>Score {summary["score"]:+d}/3</strong> · {summary["valid"]}/3 válidos<br>{status}</div>',
+                    unsafe_allow_html=True)
+        moves = [quotes[c]["move"] * SYMS[c][2] / (SYMS[c][3] / 3)
+                 for c in codes if quotes[c]["valid"] and quotes[c]["move"] is not None]
+        recent = sum(1 if v >= 1 else -1 if v <= -1 else 0 for v in moves)
+        wording = ("Dados recentes insuficientes" if len(moves) < 3 else
+                   "Melhorando para risco" if recent >= 2 else "Piorando para risco" if recent <= -2 else "Estável / misto")
+        st.caption(f"{name} · Movimento recente: {wording} · {len(moves)}/3 com janela de ~15 min")
+    st.subheader("Alinhamento e divergências")
+    for message in divergence(summaries["GLOBAL"], summaries["BRASIL"], quotes):
+        st.info(message)
+    st.caption("Contexto do mercado, não sinal de entrada no WIN. Confirmação temporal não é probabilidade de acerto.")
+    for name, codes in GROUPS.items():
+        st.subheader("🌐 Global" if name == "GLOBAL" else "🇧🇷 Brasil nos EUA")
+        for code in codes:
+            quote_card(code, quotes[code])
+    with st.expander("NQ • confirmação adicional, sem voto"):
+        quote_card("NQ", quotes["NQ"])
     with st.expander("📈 Gráficos de 5 minutos"):
-        for code in active:
-            if quotes[code]["line"]:
+        for code, row in quotes.items():
+            if row["line"]:
                 st.write("**" + code + "**")
-                st.line_chart(pd.DataFrame({"Preço": quotes[code]["line"]}), height=150)
-            else:
-                st.caption(f"{code}: sem histórico")
+                st.line_chart(pd.DataFrame({"Preço": row["line"]}, index=pd.DatetimeIndex(row["times"])), height=150)
+                st.caption("Últimos candles disponíveis; consulte a data e a validade acima.")
+    with st.expander("🕘 Leituras 08:50 · 09:25 · 09:50 e histórico"):
+        history_panel(quotes, summaries, now)
     st.divider()
-    st.caption("Yahoo Finance pode limitar ou atrasar dados. "
-               "Painel informativo: não emite ordens, alertas em segundo plano ou sinais de entrada.")
-screen()
+    st.caption("V2 · Yahoo Finance · Sem ordens ou notificações em segundo plano. "
+               "Registros e confirmações pertencem apenas a esta sessão; não há coleta agendada com o aplicativo fechado.")
+
+
+if __name__ == "__main__":
+    main()
