@@ -1,0 +1,45 @@
+name: Radar do WIN suplementar
+on:
+  schedule:
+    - cron: "0 11-21 * * 1-5" # 08h–18h Brasília; execução pode atrasar
+  push:
+    branches: [main]
+    paths: [".github/workflows/radar.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: rgs-radar-hourly
+  cancel-in-progress: false
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: rgs-master-mobile-v1
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: rgs-master-mobile/requirements.txt
+      - name: Instalar dependências do RGS
+        run: python -m pip install -r rgs-master-mobile/requirements.txt
+      - name: Coletar radar
+        run: python rgs-master-mobile/radar.py
+      - name: Salvar somente dados do radar
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "radar-bot"
+          git config user.email "radar-bot@users.noreply.github.com"
+          git add -- rgs-master-mobile/docs/radar.json
+          if git diff --cached --quiet; then
+            echo "Sem mudanças"
+            exit 0
+          fi
+          git commit -m "Atualiza radar horário RGS"
+          git pull --rebase origin rgs-master-mobile-v1
+          git push origin HEAD:rgs-master-mobile-v1
