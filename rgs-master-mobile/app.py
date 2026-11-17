@@ -410,10 +410,13 @@ def screen():
                 st.caption("Últimos candles disponíveis; consulte a data e a validade acima.")
     with st.expander("🕘 Leituras 08:50 · 09:25 · 09:50 e histórico"):
         history_panel(quotes, summaries, now)
+    from radar_panel import render_radar
+    render_radar(summaries)
     st.divider()
     st.caption("V3 · Yahoo Finance + B3 (DI informativo) · Sem ordens ou notificações em segundo plano. "
-               "Registros e confirmações pertencem apenas a esta sessão; não há coleta agendada com o aplicativo fechado.")
+               "Registros e confirmações pertencem apenas a esta sessão; o radar suplementar mantém suas próprias leituras horárias no GitHub, inclusive com a página fechada.")
 
 
 if __name__ == "__main__":
     main()
+
