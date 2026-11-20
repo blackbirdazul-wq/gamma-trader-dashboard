@@ -1,17 +1,17 @@
 {
   "schema_version": 1,
   "latest": {
-    "collected_at": "2026-11-20T01:44:31.751626+00:00",
+    "collected_at": "2026-11-20T19:02:07.542342+00:00",
     "summaries": {
       "GLOBAL": {
-        "label": "INCONCLUSIVO",
-        "score": 0,
-        "valid": 1
+        "label": "RISK OFF",
+        "score": -2,
+        "valid": 3
       },
       "BRASIL": {
-        "label": "INCONCLUSIVO",
-        "score": 0,
-        "valid": 0
+        "label": "RISK OFF",
+        "score": -3,
+        "valid": 3
       },
       "JUROS": {
         "label": "INCONCLUSIVO",
@@ -23,86 +23,86 @@
       "ES": {
         "code": "ES",
         "name": "S&P 500 futuro",
-        "price": null,
-        "pct": null,
-        "time": null,
-        "age": null,
-        "move": null,
-        "valid": false,
-        "reason": "FALHA YAHOO — OperationalError",
-        "reference": null
+        "price": 7039.0,
+        "pct": -2.198756469484875,
+        "time": "2026-11-20T15:50:00-03:00",
+        "age": 12.1257057,
+        "move": -0.15248767686797393,
+        "valid": true,
+        "reason": "Cotação válida pelo limite de 45 min",
+        "reference": "2026-11-19"
       },
       "DXY": {
         "code": "DXY",
         "name": "Índice do dólar",
-        "price": 103.88200378417969,
-        "pct": 0.02118541661739748,
-        "time": "2026-11-19T22:30:00-03:00",
-        "age": 14.529193766666667,
-        "move": 0.0,
+        "price": 103.87000274658203,
+        "pct": -0.028872741921381895,
+        "time": "2026-11-20T15:50:00-03:00",
+        "age": 12.1257057,
+        "move": 0.02407581066494746,
         "valid": true,
         "reason": "Cotação válida pelo limite de 45 min",
-        "reference": "2026-11-18"
+        "reference": "2026-11-19"
       },
       "VIX": {
         "code": "VIX",
         "name": "Volatilidade",
-        "price": 28.440000534057617,
-        "pct": 15.798050295138122,
-        "time": "2026-11-19T18:15:00-03:00",
-        "age": 269.52919376666665,
-        "move": -1.9986213458204394,
-        "valid": false,
-        "reason": "COTAÇÃO ANTIGA — fora do score",
-        "reference": "2026-11-18"
+        "price": 31.899999618530273,
+        "pct": 12.165959984175178,
+        "time": "2026-11-20T15:45:00-03:00",
+        "age": 17.1257057,
+        "move": 0.8855116124774298,
+        "valid": true,
+        "reason": "Cotação válida pelo limite de 45 min",
+        "reference": "2026-11-19"
       },
       "EWZ": {
         "code": "EWZ",
         "name": "ETF Brasil",
-        "price": 29.45,
-        "pct": -2.0618546761440038,
-        "time": "2026-11-19T21:45:00-03:00",
-        "age": 59.52919376666667,
-        "move": null,
-        "valid": false,
-        "reason": "COTAÇÃO ANTIGA — fora do score",
-        "reference": "2026-11-18"
+        "price": 28.790000915527344,
+        "pct": -2.439848552253887,
+        "time": "2026-11-20T16:00:00-03:00",
+        "age": 2.1257057,
+        "move": -0.05207217319744828,
+        "valid": true,
+        "reason": "Cotação válida pelo limite de 45 min",
+        "reference": "2026-11-19"
       },
       "VALE": {
         "code": "VALE",
         "name": "Vale ADR",
-        "price": 9.9226,
-        "pct": -1.1693223336562641,
-        "time": "2026-11-19T21:45:00-03:00",
-        "age": 59.52919376666667,
-        "move": null,
-        "valid": false,
-        "reason": "COTAÇÃO ANTIGA — fora do score",
-        "reference": "2026-11-18"
+        "price": 9.619999885559082,
+        "pct": -2.1363178003749095,
+        "time": "2026-11-20T16:00:00-03:00",
+        "age": 2.1257057,
+        "move": 0.3128230708431934,
+        "valid": true,
+        "reason": "Cotação válida pelo limite de 45 min",
+        "reference": "2026-11-19"
       },
       "PBR": {
         "code": "PBR",
         "name": "Petrobras ADR",
-        "price": 16.3074,
-        "pct": -2.5259985283887065,
-        "time": "2026-11-19T21:50:00-03:00",
-        "age": 54.52919376666667,
-        "move": null,
-        "valid": false,
-        "reason": "COTAÇÃO ANTIGA — fora do score",
-        "reference": "2026-11-18"
+        "price": 16.219999313354492,
+        "pct": -0.4297212905993608,
+        "time": "2026-11-20T16:00:00-03:00",
+        "age": 2.1257057,
+        "move": 0.03083047005585371,
+        "valid": true,
+        "reason": "Cotação válida pelo limite de 45 min",
+        "reference": "2026-11-19"
       },
       "NQ": {
         "code": "NQ",
         "name": "Nasdaq futuro • confirmação adicional",
-        "price": 26469.25,
-        "pct": -2.639153263998084,
-        "time": "2026-11-19T22:30:00-03:00",
-        "age": 14.529193766666667,
-        "move": -0.10661383149354053,
+        "price": 25590.0,
+        "pct": -3.7978966363098055,
+        "time": "2026-11-20T15:50:00-03:00",
+        "age": 12.1257057,
+        "move": -0.14730126523007092,
         "valid": true,
         "reason": "Cotação válida pelo limite de 45 min",
-        "reference": "2026-11-18"
+        "reference": "2026-11-19"
       },
       "DI1F27": {
         "code": "DI1F27",
@@ -117,7 +117,7 @@
         "valid": false,
         "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
         "reference": null,
-        "snapshot": "2026-11-19 22:44:31"
+        "snapshot": "2026-11-20 16:02:06"
       },
       "DI1F29": {
         "code": "DI1F29",
@@ -132,7 +132,7 @@
         "valid": false,
         "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
         "reference": null,
-        "snapshot": "2026-11-19 22:44:31"
+        "snapshot": "2026-11-20 16:02:06"
       },
       "DI1F31": {
         "code": "DI1F31",
@@ -147,7 +147,7 @@
         "valid": false,
         "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
         "reference": null,
-        "snapshot": "2026-11-19 22:44:31"
+        "snapshot": "2026-11-20 16:02:06"
       },
       "DI1F33": {
         "code": "DI1F33",
@@ -162,11 +162,11 @@
         "valid": false,
         "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
         "reference": null,
-        "snapshot": "2026-11-19 22:44:31"
+        "snapshot": "2026-11-20 16:02:06"
       }
     },
     "notes": [
-      "Dados insuficientes para comparar Global e Brasil com direção completa."
+      "Global e Brasil alinhados nesta leitura."
     ]
   },
   "history": [
@@ -1184,6 +1184,175 @@
       },
       "notes": [
         "Dados insuficientes para comparar Global e Brasil com direção completa."
+      ]
+    },
+    {
+      "collected_at": "2026-11-20T19:02:07.542342+00:00",
+      "summaries": {
+        "GLOBAL": {
+          "label": "RISK OFF",
+          "score": -2,
+          "valid": 3
+        },
+        "BRASIL": {
+          "label": "RISK OFF",
+          "score": -3,
+          "valid": 3
+        },
+        "JUROS": {
+          "label": "INCONCLUSIVO",
+          "score": 0,
+          "valid": 0
+        }
+      },
+      "quotes": {
+        "ES": {
+          "code": "ES",
+          "name": "S&P 500 futuro",
+          "price": 7039.0,
+          "pct": -2.198756469484875,
+          "time": "2026-11-20T15:50:00-03:00",
+          "age": 12.1257057,
+          "move": -0.15248767686797393,
+          "valid": true,
+          "reason": "Cotação válida pelo limite de 45 min",
+          "reference": "2026-11-19"
+        },
+        "DXY": {
+          "code": "DXY",
+          "name": "Índice do dólar",
+          "price": 103.87000274658203,
+          "pct": -0.028872741921381895,
+          "time": "2026-11-20T15:50:00-03:00",
+          "age": 12.1257057,
+          "move": 0.02407581066494746,
+          "valid": true,
+          "reason": "Cotação válida pelo limite de 45 min",
+          "reference": "2026-11-19"
+        },
+        "VIX": {
+          "code": "VIX",
+          "name": "Volatilidade",
+          "price": 31.899999618530273,
+          "pct": 12.165959984175178,
+          "time": "2026-11-20T15:45:00-03:00",
+          "age": 17.1257057,
+          "move": 0.8855116124774298,
+          "valid": true,
+          "reason": "Cotação válida pelo limite de 45 min",
+          "reference": "2026-11-19"
+        },
+        "EWZ": {
+          "code": "EWZ",
+          "name": "ETF Brasil",
+          "price": 28.790000915527344,
+          "pct": -2.439848552253887,
+          "time": "2026-11-20T16:00:00-03:00",
+          "age": 2.1257057,
+          "move": -0.05207217319744828,
+          "valid": true,
+          "reason": "Cotação válida pelo limite de 45 min",
+          "reference": "2026-11-19"
+        },
+        "VALE": {
+          "code": "VALE",
+          "name": "Vale ADR",
+          "price": 9.619999885559082,
+          "pct": -2.1363178003749095,
+          "time": "2026-11-20T16:00:00-03:00",
+          "age": 2.1257057,
+          "move": 0.3128230708431934,
+          "valid": true,
+          "reason": "Cotação válida pelo limite de 45 min",
+          "reference": "2026-11-19"
+        },
+        "PBR": {
+          "code": "PBR",
+          "name": "Petrobras ADR",
+          "price": 16.219999313354492,
+          "pct": -0.4297212905993608,
+          "time": "2026-11-20T16:00:00-03:00",
+          "age": 2.1257057,
+          "move": 0.03083047005585371,
+          "valid": true,
+          "reason": "Cotação válida pelo limite de 45 min",
+          "reference": "2026-11-19"
+        },
+        "NQ": {
+          "code": "NQ",
+          "name": "Nasdaq futuro • confirmação adicional",
+          "price": 25590.0,
+          "pct": -3.7978966363098055,
+          "time": "2026-11-20T15:50:00-03:00",
+          "age": 12.1257057,
+          "move": -0.14730126523007092,
+          "valid": true,
+          "reason": "Cotação válida pelo limite de 45 min",
+          "reference": "2026-11-19"
+        },
+        "DI1F27": {
+          "code": "DI1F27",
+          "name": "DI janeiro/2027",
+          "price": 13.731,
+          "pct": 0.05100553774408656,
+          "bp": 0.7,
+          "adjustment": 13.724,
+          "time": null,
+          "age": null,
+          "move": null,
+          "valid": false,
+          "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
+          "reference": null,
+          "snapshot": "2026-11-20 16:02:06"
+        },
+        "DI1F29": {
+          "code": "DI1F29",
+          "name": "DI janeiro/2029",
+          "price": 15.3,
+          "pct": 0.0,
+          "bp": 0.0,
+          "adjustment": 15.3,
+          "time": null,
+          "age": null,
+          "move": null,
+          "valid": false,
+          "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
+          "reference": null,
+          "snapshot": "2026-11-20 16:02:06"
+        },
+        "DI1F31": {
+          "code": "DI1F31",
+          "name": "DI janeiro/2031",
+          "price": 15.46,
+          "pct": -0.13565015179897166,
+          "bp": -2.1,
+          "adjustment": 15.481,
+          "time": null,
+          "age": null,
+          "move": null,
+          "valid": false,
+          "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
+          "reference": null,
+          "snapshot": "2026-11-20 16:02:06"
+        },
+        "DI1F33": {
+          "code": "DI1F33",
+          "name": "DI janeiro/2033",
+          "price": 15.51,
+          "pct": -0.10948670058607002,
+          "bp": -1.7,
+          "adjustment": 15.527,
+          "time": null,
+          "age": null,
+          "move": null,
+          "valid": false,
+          "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
+          "reference": null,
+          "snapshot": "2026-11-20 16:02:06"
+        }
+      },
+      "notes": [
+        "Global e Brasil alinhados nesta leitura."
       ]
     }
   ]
