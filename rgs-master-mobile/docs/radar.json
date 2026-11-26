@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "latest": {
-    "collected_at": "2026-11-26T03:27:50.832280+00:00",
+    "collected_at": "2026-11-26T20:03:52.566029+00:00",
     "summaries": {
       "GLOBAL": {
         "label": "INCONCLUSIVO",
-        "score": 1,
-        "valid": 2
+        "score": 0,
+        "valid": 0
       },
       "BRASIL": {
         "label": "INCONCLUSIVO",
@@ -23,38 +23,38 @@
       "ES": {
         "code": "ES",
         "name": "S&P 500 futuro",
-        "price": 7235.0,
-        "pct": 0.24246622791825878,
-        "time": "2026-11-26T00:15:00-03:00",
-        "age": 12.847204666666666,
-        "move": -0.04144791378833945,
-        "valid": true,
-        "reason": "Cotação válida pelo limite de 45 min",
+        "price": 7247.75,
+        "pct": 0.4191201939729883,
+        "time": "2026-11-26T01:55:00-03:00",
+        "age": 908.8761004833334,
+        "move": -0.03448156960105253,
+        "valid": false,
+        "reason": "COTAÇÃO ANTIGA — fora do score",
         "reference": "2026-11-24"
       },
       "DXY": {
         "code": "DXY",
         "name": "Índice do dólar",
-        "price": 103.79100036621094,
-        "pct": -0.018299964193801976,
-        "time": "2026-11-26T00:15:00-03:00",
-        "age": 12.847204666666666,
-        "move": 0.009637733690226469,
-        "valid": true,
-        "reason": "Cotação válida pelo limite de 45 min",
+        "price": 103.80999755859375,
+        "pct": 0.0,
+        "time": "2026-11-26T01:55:00-03:00",
+        "age": 908.8761004833334,
+        "move": 0.020229594132015194,
+        "valid": false,
+        "reason": "COTAÇÃO ANTIGA — fora do score",
         "reference": "2026-11-24"
       },
       "VIX": {
         "code": "VIX",
         "name": "Volatilidade",
-        "price": 28.290000915527344,
-        "pct": 7.321700532957776,
-        "time": "2026-11-25T18:15:00-03:00",
-        "age": 372.84720466666664,
-        "move": 1.5069969990912258,
+        "price": 26.799999237060547,
+        "pct": -5.266884518370551,
+        "time": "2026-11-26T13:30:00-03:00",
+        "age": 213.87610048333332,
+        "move": 0.6006000415836432,
         "valid": false,
         "reason": "COTAÇÃO ANTIGA — fora do score",
-        "reference": "2026-11-24"
+        "reference": "2026-11-25"
       },
       "EWZ": {
         "code": "EWZ",
@@ -62,7 +62,7 @@
         "price": 30.79,
         "pct": 5.085326968387083,
         "time": "2026-11-25T21:55:00-03:00",
-        "age": 152.84720466666667,
+        "age": 1148.8761004833332,
         "move": 0.1952489424015491,
         "valid": false,
         "reason": "COTAÇÃO ANTIGA — fora do score",
@@ -74,7 +74,7 @@
         "price": 9.7767,
         "pct": 4.340449513427624,
         "time": "2026-11-25T21:30:00-03:00",
-        "age": 177.84720466666667,
+        "age": 1173.8761004833332,
         "move": -0.7441624365482236,
         "valid": false,
         "reason": "COTAÇÃO ANTIGA — fora do score",
@@ -86,7 +86,7 @@
         "price": 16.2502,
         "pct": 3.7026159596756925,
         "time": "2026-11-25T21:55:00-03:00",
-        "age": 152.84720466666667,
+        "age": 1148.8761004833332,
         "move": null,
         "valid": false,
         "reason": "COTAÇÃO ANTIGA — fora do score",
@@ -95,74 +95,74 @@
       "NQ": {
         "code": "NQ",
         "name": "Nasdaq futuro • confirmação adicional",
-        "price": 26302.5,
-        "pct": 0.10180489614948218,
-        "time": "2026-11-26T00:15:00-03:00",
-        "age": 12.847204666666666,
-        "move": -0.040853942405438826,
-        "valid": true,
-        "reason": "Cotação válida pelo limite de 45 min",
+        "price": 26389.75,
+        "pct": 0.4338601181697932,
+        "time": "2026-11-26T01:55:00-03:00",
+        "age": 908.8761004833334,
+        "move": -0.04166548298817352,
+        "valid": false,
+        "reason": "COTAÇÃO ANTIGA — fora do score",
         "reference": "2026-11-24"
       },
       "DI1F27": {
         "code": "DI1F27",
         "name": "DI janeiro/2027",
-        "price": 13.683,
-        "pct": -0.007307804735456891,
-        "bp": -0.1,
-        "adjustment": 13.684,
+        "price": 13.671,
+        "pct": -0.021939447125929323,
+        "bp": -0.3,
+        "adjustment": 13.674,
         "time": null,
         "age": null,
         "move": null,
         "valid": false,
         "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
         "reference": null,
-        "snapshot": "2026-11-26 00:27:50"
+        "snapshot": "2026-11-26 17:03:51"
       },
       "DI1F29": {
         "code": "DI1F29",
         "name": "DI janeiro/2029",
-        "price": 14.66,
-        "pct": -0.31279749762000986,
-        "bp": -4.6,
-        "adjustment": 14.706,
+        "price": 14.45,
+        "pct": -0.020756936276211668,
+        "bp": -0.3,
+        "adjustment": 14.453,
         "time": null,
         "age": null,
         "move": null,
         "valid": false,
         "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
         "reference": null,
-        "snapshot": "2026-11-26 00:27:50"
+        "snapshot": "2026-11-26 17:03:51"
       },
       "DI1F31": {
         "code": "DI1F31",
         "name": "DI janeiro/2031",
-        "price": 14.88,
-        "pct": -0.44158972300279986,
-        "bp": -6.6,
-        "adjustment": 14.946,
+        "price": 14.62,
+        "pct": 0.0068404131609467456,
+        "bp": 0.1,
+        "adjustment": 14.619,
         "time": null,
         "age": null,
         "move": null,
         "valid": false,
         "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
         "reference": null,
-        "snapshot": "2026-11-26 00:27:50"
+        "snapshot": "2026-11-26 17:03:51"
       },
       "DI1F33": {
         "code": "DI1F33",
         "name": "DI janeiro/2033",
-        "price": 14.995,
-        "pct": -0.5108811040339667,
-        "bp": -7.7,
-        "adjustment": 15.072,
+        "price": 14.745,
+        "pct": -0.05422625906595924,
+        "bp": -0.8,
+        "adjustment": 14.753,
         "time": null,
         "age": null,
         "move": null,
         "valid": false,
         "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
         "reference": null,
-        "snapshot": "2026-11-26 00:27:50"
+        "snapshot": "2026-11-26 17:03:51"
       }
     },
     "notes": [
@@ -2194,6 +2194,175 @@
           "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
           "reference": null,
           "snapshot": "2026-11-26 00:27:50"
+        }
+      },
+      "notes": [
+        "Dados insuficientes para comparar Global e Brasil com direção completa."
+      ]
+    },
+    {
+      "collected_at": "2026-11-26T20:03:52.566029+00:00",
+      "summaries": {
+        "GLOBAL": {
+          "label": "INCONCLUSIVO",
+          "score": 0,
+          "valid": 0
+        },
+        "BRASIL": {
+          "label": "INCONCLUSIVO",
+          "score": 0,
+          "valid": 0
+        },
+        "JUROS": {
+          "label": "INCONCLUSIVO",
+          "score": 0,
+          "valid": 0
+        }
+      },
+      "quotes": {
+        "ES": {
+          "code": "ES",
+          "name": "S&P 500 futuro",
+          "price": 7247.75,
+          "pct": 0.4191201939729883,
+          "time": "2026-11-26T01:55:00-03:00",
+          "age": 908.8761004833334,
+          "move": -0.03448156960105253,
+          "valid": false,
+          "reason": "COTAÇÃO ANTIGA — fora do score",
+          "reference": "2026-11-24"
+        },
+        "DXY": {
+          "code": "DXY",
+          "name": "Índice do dólar",
+          "price": 103.80999755859375,
+          "pct": 0.0,
+          "time": "2026-11-26T01:55:00-03:00",
+          "age": 908.8761004833334,
+          "move": 0.020229594132015194,
+          "valid": false,
+          "reason": "COTAÇÃO ANTIGA — fora do score",
+          "reference": "2026-11-24"
+        },
+        "VIX": {
+          "code": "VIX",
+          "name": "Volatilidade",
+          "price": 26.799999237060547,
+          "pct": -5.266884518370551,
+          "time": "2026-11-26T13:30:00-03:00",
+          "age": 213.87610048333332,
+          "move": 0.6006000415836432,
+          "valid": false,
+          "reason": "COTAÇÃO ANTIGA — fora do score",
+          "reference": "2026-11-25"
+        },
+        "EWZ": {
+          "code": "EWZ",
+          "name": "ETF Brasil",
+          "price": 30.79,
+          "pct": 5.085326968387083,
+          "time": "2026-11-25T21:55:00-03:00",
+          "age": 1148.8761004833332,
+          "move": 0.1952489424015491,
+          "valid": false,
+          "reason": "COTAÇÃO ANTIGA — fora do score",
+          "reference": "2026-11-24"
+        },
+        "VALE": {
+          "code": "VALE",
+          "name": "Vale ADR",
+          "price": 9.7767,
+          "pct": 4.340449513427624,
+          "time": "2026-11-25T21:30:00-03:00",
+          "age": 1173.8761004833332,
+          "move": -0.7441624365482236,
+          "valid": false,
+          "reason": "COTAÇÃO ANTIGA — fora do score",
+          "reference": "2026-11-24"
+        },
+        "PBR": {
+          "code": "PBR",
+          "name": "Petrobras ADR",
+          "price": 16.2502,
+          "pct": 3.7026159596756925,
+          "time": "2026-11-25T21:55:00-03:00",
+          "age": 1148.8761004833332,
+          "move": null,
+          "valid": false,
+          "reason": "COTAÇÃO ANTIGA — fora do score",
+          "reference": "2026-11-24"
+        },
+        "NQ": {
+          "code": "NQ",
+          "name": "Nasdaq futuro • confirmação adicional",
+          "price": 26389.75,
+          "pct": 0.4338601181697932,
+          "time": "2026-11-26T01:55:00-03:00",
+          "age": 908.8761004833334,
+          "move": -0.04166548298817352,
+          "valid": false,
+          "reason": "COTAÇÃO ANTIGA — fora do score",
+          "reference": "2026-11-24"
+        },
+        "DI1F27": {
+          "code": "DI1F27",
+          "name": "DI janeiro/2027",
+          "price": 13.671,
+          "pct": -0.021939447125929323,
+          "bp": -0.3,
+          "adjustment": 13.674,
+          "time": null,
+          "age": null,
+          "move": null,
+          "valid": false,
+          "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
+          "reference": null,
+          "snapshot": "2026-11-26 17:03:51"
+        },
+        "DI1F29": {
+          "code": "DI1F29",
+          "name": "DI janeiro/2029",
+          "price": 14.45,
+          "pct": -0.020756936276211668,
+          "bp": -0.3,
+          "adjustment": 14.453,
+          "time": null,
+          "age": null,
+          "move": null,
+          "valid": false,
+          "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
+          "reference": null,
+          "snapshot": "2026-11-26 17:03:51"
+        },
+        "DI1F31": {
+          "code": "DI1F31",
+          "name": "DI janeiro/2031",
+          "price": 14.62,
+          "pct": 0.0068404131609467456,
+          "bp": 0.1,
+          "adjustment": 14.619,
+          "time": null,
+          "age": null,
+          "move": null,
+          "valid": false,
+          "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
+          "reference": null,
+          "snapshot": "2026-11-26 17:03:51"
+        },
+        "DI1F33": {
+          "code": "DI1F33",
+          "name": "DI janeiro/2033",
+          "price": 14.745,
+          "pct": -0.05422625906595924,
+          "bp": -0.8,
+          "adjustment": 14.753,
+          "time": null,
+          "age": null,
+          "move": null,
+          "valid": false,
+          "reason": "SEM HORÁRIO DO NEGÓCIO — fora do score",
+          "reference": null,
+          "snapshot": "2026-11-26 17:03:51"
         }
       },
       "notes": [
